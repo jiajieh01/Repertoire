@@ -7,6 +7,7 @@ def main():
     root = tk.Tk()
     root.title("Simple Chess Board")
     board_canvas = bb.create_chess_board(root)
+    bb.place_board_pieces(board_canvas)
     root.mainloop()
 
 if __name__ == "__main__":

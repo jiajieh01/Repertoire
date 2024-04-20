@@ -11,13 +11,8 @@ board_pieces = {}
 def append_to_board_pieces(canvas, centre_x, centre_y, image_path, square_size):
     # Load and resize piece image
     piece_image = Image.open(image_path)
-    piece_image = piece_image.resize((int(square_size * 0.8), int(square_size * 0.8)))
+    piece_image = piece_image.resize((int(square_size * 0.9), int(square_size * 0.9)))
     piece_image_tk = ImageTk.PhotoImage(piece_image)
-
-    # Display piece image on the canvas
-    canvas.create_image(centre_x, centre_y, image = piece_image_tk)
-    canvas.image = piece_image_tk
-
     board_pieces[(centre_x, centre_y)] = piece_image_tk
 
 def create_chess_board(root, square_size=80):
@@ -54,7 +49,6 @@ def create_chess_board(root, square_size=80):
             image_path = os.path.join(image_dir, filename)
 
             append_to_board_pieces(canvas, centre_x, centre_y, image_path, square_size)
-            logging.info(f"{filename} placed at ({centre_x}, {centre_y})")
     
     return canvas
 
