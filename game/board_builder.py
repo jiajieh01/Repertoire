@@ -66,6 +66,9 @@ class ChessBoard:
             piece_image_tk = ImageTk.PhotoImage(piece_image)
             self.board_pieces[(centre_x, centre_y)] = piece_image_tk
 
+            # Place the piece image on the canvas at (centre_x, centre_y)
+            self.canvas.create_image(centre_x, centre_y, image=piece_image_tk, tags="pieces")
+
     def _place_board_pieces(self):
         """Place all pieces stored in board_pieces onto the canvas."""
         for (centre_x, centre_y), piece_image_tk in self.board_pieces.items():
@@ -87,8 +90,7 @@ class ChessBoard:
             if move in self.board.legal_moves:
                 self.board.push(move)
                 self.update_board_display()
-                # Clear selection after move
-                self.selected_square = None
+                self.selected_square = None # Clear selection after move
 
     def update_board_display(self):
         """Update the board display on the canvas."""
@@ -98,25 +100,9 @@ class ChessBoard:
         for row in range(8):
             for col in range(8):
                 square_index = chess.square(col, 7 - row)
-                piece = self.board.piece_at(square_index)
-                if piece:
-                    piece_color = "white" if piece.color == chess.WHITE else "black"
-                    piece_type = chess.piece_name(piece.piece_type)
-                    filename = f"{piece_color}_{piece_type}.png"
-                    image_path = os.path.join(self.image_dir, filename)
-
-                    piece_image = Image.open(image_path)
-                    piece_image = piece_image.resize((
-                        int(self.square_size * 0.9),
-                        int(self.square_size * 0.9)
-                    ))
-                    piece_image_tk = ImageTk.PhotoImage(piece_image)
-                    self.board_pieces[(col, row)] = piece_image_tk
-                    self.canvas.create_image(
-                        col * self.square_size + self.square_size / 2,
-                        row * self.square_size + self.square_size / 2,
-                        image=piece_image_tk, tags="pieces"
-                    )
+                centre_x = col * self.square_size + self.square_size / 2
+                centre_y = row * self.square_size + self.square_size / 2
+                self._place_piece_on_square(square_index, centre_x, centre_y)
 
     def bind_events(self):
         """Bind mouse click event to canvas."""
