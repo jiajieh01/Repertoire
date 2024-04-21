@@ -1,21 +1,21 @@
+"""
+Contains the functions that build the board and the interactive GUI, including pieces.
+"""
+
+import os
+import logging
 import tkinter as tk
 import chess
 from PIL import Image, ImageTk
-import os
-import logging
 
 logging.basicConfig(level='INFO')
 
 board_pieces = {}
 
-def append_to_board_pieces(canvas, centre_x, centre_y, image_path, square_size):
-    # Load and resize piece image
-    piece_image = Image.open(image_path)
-    piece_image = piece_image.resize((int(square_size * 0.9), int(square_size * 0.9)))
-    piece_image_tk = ImageTk.PhotoImage(piece_image)
-    board_pieces[(centre_x, centre_y)] = piece_image_tk
-
 def create_chess_board(root, square_size=80):
+    """
+    Creates the tkinter canvas, creates the chess board, places pieces
+    """
     canvas = tk.Canvas(root, width = 8 * square_size, height = 8 * square_size)
     canvas.pack()
 
@@ -25,11 +25,10 @@ def create_chess_board(root, square_size=80):
 
     for row in range(8):
         for col in range(8):
+            # Creates the chess board
             x1, y1 = col * square_size, row * square_size
             x2, y2 = x1 + square_size, y1 + square_size
             color = "white" if (row + col) % 2 == 0 else "gray"
-
-            # Creates rectangle with TL:(x1, y1), BR:(x2, y2)
             canvas.create_rectangle(x1, y1, x2, y2, fill=color, outline="")
 
             # Calculate centre of the square
@@ -40,16 +39,19 @@ def create_chess_board(root, square_size=80):
             # Places piece on square if it exists
             piece = board.piece_at(square_index)
 
-            if piece is None: continue
+            if piece is None:
+                continue
 
             piece_color = "white" if piece.color == chess.WHITE else "black"
             piece_type = chess.piece_name(piece.piece_type)
 
+            # Appends piece co-ordinates and piece image to board_pieces
             filename = f"{piece_color}_{piece_type}.png"
             image_path = os.path.join(image_dir, filename)
-
-            append_to_board_pieces(canvas, centre_x, centre_y, image_path, square_size)
-    
+            piece_image = Image.open(image_path)
+            piece_image = piece_image.resize((int(square_size * 0.9), int(square_size * 0.9)))
+            piece_image_tk = ImageTk.PhotoImage(piece_image)
+            board_pieces[(centre_x, centre_y)] = piece_image_tk
     return canvas
 
 def place_board_pieces(canvas):
