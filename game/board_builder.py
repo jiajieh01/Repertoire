@@ -21,6 +21,7 @@ class ChessBoard:
         self.canvas.pack()
         self.board = chess.Board()
         self.board_pieces = {}
+        self.square_coordinates = {}
         self.image_dir = os.path.join(os.path.dirname(__file__), "pieces")
 
     def create_chess_board(self):
@@ -37,6 +38,7 @@ class ChessBoard:
                 centre_x = (x1 + x2) / 2
                 centre_y = (y1 + y2) / 2
                 square_index = chess.square(col, 7 - row)
+                self.square_coordinates[square_index] = (centre_x, centre_y)
 
                 # Place piece on square if it exists
                 piece = self.board.piece_at(square_index)
