@@ -1,13 +1,19 @@
 """This contains the main execution function"""
-import chess
 import tkinter as tk
-import game.board_builder as bb
+from game.board_builder import ChessBoard
 
 def main():
+    """The main execution function"""
     root = tk.Tk()
     root.title("Simple Chess Board")
-    board_canvas = bb.create_chess_board(root)
-    bb.place_board_pieces(board_canvas)
+
+    # Create ChessBoard instance
+    chess_board = ChessBoard(root)
+
+    # Build and render the chess board
+    chess_board.create_chess_board()
+    chess_board.place_board_pieces()
+
     root.mainloop()
 
 if __name__ == "__main__":
