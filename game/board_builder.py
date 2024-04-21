@@ -19,13 +19,12 @@ class ChessBoard:
         self.square_size = square_size
         self.canvas = tk.Canvas(root, width=8 * square_size, height=8 * square_size)
         self.canvas.pack()
+        self.board = chess.Board()
         self.board_pieces = {}
         self.image_dir = os.path.join(os.path.dirname(__file__), "pieces")
 
     def create_chess_board(self):
         """Create the tkinter canvas, build the chess board, and place pieces."""
-        board = chess.Board()
-
         for row in range(8):
             for col in range(8):
                 # Create chess board squares
@@ -40,7 +39,7 @@ class ChessBoard:
                 square_index = chess.square(col, 7 - row)
 
                 # Place piece on square if it exists
-                piece = board.piece_at(square_index)
+                piece = self.board.piece_at(square_index)
                 if piece:
                     piece_color = "white" if piece.color == chess.WHITE else "black"
                     piece_type = chess.piece_name(piece.piece_type)
@@ -59,5 +58,6 @@ class ChessBoard:
         """
         Place all pieces stored in board_pieces onto the canvas.
         """
+
         for (centre_x, centre_y), piece_image_tk in self.board_pieces.items():
             self.canvas.create_image(centre_x, centre_y, image=piece_image_tk)
