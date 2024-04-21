@@ -11,7 +11,7 @@ def main():
     chess_board = ChessBoard(root)
 
     # Build and render the chess board
-    chess_board.create_chess_board()
+    chess_board.start_game()
 
     root.mainloop()
 

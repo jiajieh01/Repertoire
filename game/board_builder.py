@@ -23,6 +23,7 @@ class ChessBoard:
         self.board_pieces = {}
         self.square_coordinates = {}
         self.image_dir = os.path.join(os.path.dirname(__file__), "pieces")
+        self.selected_square = None
 
     def create_chess_board(self):
         """Create the tkinter canvas, build the chess board, and place pieces."""
@@ -66,8 +67,63 @@ class ChessBoard:
             self.board_pieces[(centre_x, centre_y)] = piece_image_tk
 
     def _place_board_pieces(self):
-        """
-        Place all pieces stored in board_pieces onto the canvas.
-        """
+        """Place all pieces stored in board_pieces onto the canvas."""
         for (centre_x, centre_y), piece_image_tk in self.board_pieces.items():
             self.canvas.create_image(centre_x, centre_y, image=piece_image_tk)
+
+    def handle_click(self, event):
+        """Handle mouse click event on canvas."""
+        x, y = event.x, event.y
+        col = x // self.square_size
+        row = y // self.square_size
+        square_index = chess.square(col, 7 - row)
+
+        if self.selected_square is None:
+            # Select piece on the clicked square
+            self.selected_square = square_index
+        else:
+            # Move the selected piece to the clicked square if it is a valid move
+            move = chess.Move(self.selected_square, square_index)
+            if move in self.board.legal_moves:
+                self.board.push(move)
+                self.update_board_display()
+                # Clear selection after move
+                self.selected_square = None
+
+    def update_board_display(self):
+        """Update the board display on the canvas."""
+        self.canvas.delete("pieces")
+        self.board_pieces = {}
+
+        for row in range(8):
+            for col in range(8):
+                square_index = chess.square(col, 7 - row)
+                piece = self.board.piece_at(square_index)
+                if piece:
+                    piece_color = "white" if piece.color == chess.WHITE else "black"
+                    piece_type = chess.piece_name(piece.piece_type)
+                    filename = f"{piece_color}_{piece_type}.png"
+                    image_path = os.path.join(self.image_dir, filename)
+
+                    piece_image = Image.open(image_path)
+                    piece_image = piece_image.resize((
+                        int(self.square_size * 0.9),
+                        int(self.square_size * 0.9)
+                    ))
+                    piece_image_tk = ImageTk.PhotoImage(piece_image)
+                    self.board_pieces[(col, row)] = piece_image_tk
+                    self.canvas.create_image(
+                        col * self.square_size + self.square_size / 2,
+                        row * self.square_size + self.square_size / 2,
+                        image=piece_image_tk, tags="pieces"
+                    )
+
+    def bind_events(self):
+        """Bind mouse click event to canvas."""
+        self.canvas.bind("<Button-1>", self.handle_click)
+
+    def start_game(self):
+        """Start the chess game."""
+        self.create_chess_board()
+        self.update_board_display()
+        self.bind_events()
