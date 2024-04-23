@@ -95,17 +95,23 @@ class ChessBoard:
         square_index = chess.square(col, 7 - row)
 
         if self.selected_square is None:
-            # Select piece on the clicked square
-            self.selected_square = square_index
-            self._highlight_square(square_index)
+            # No piece currently selected, highlight the clicked square if there's a piece
+            piece = self.board.piece_at(square_index)
+            if piece is not None:
+                piece_color = "white" if piece.color == chess.WHITE else "black"
+                current_turn_color = "white" if self.board.turn == chess.WHITE else "black"
+                if piece_color == current_turn_color:
+                    # Select the piece on the clicked square
+                    self.selected_square = square_index
+                    self._highlight_square(square_index)
         else:
-            # Move the selected piece to the clicked square if it is a valid move
+            # Move the selected piece to the clicked square if it's a valid move
             move = chess.Move(self.selected_square, square_index)
             if move in self.board.legal_moves:
                 self.board.push(move)
                 self.update_board_display()
                 self._reset_square_color(self.selected_square)
-                self.selected_square = None # Clear selection after move
+                self.selected_square = None  # Clear selection after move
 
     def update_board_display(self):
         """Update the board display on the canvas."""
