@@ -104,6 +104,9 @@ class ChessBoard:
                     # Select the piece on the clicked square
                     self.selected_square = square_index
                     self._highlight_square(square_index)
+        elif self.selected_square == square_index:
+            self.selected_square = None
+            self._reset_square_color(square_index)
         else:
             # Move the selected piece to the clicked square if it's a valid move
             move = chess.Move(self.selected_square, square_index)
