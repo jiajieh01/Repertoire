@@ -21,7 +21,9 @@ class ChessBoard:
         self.canvas.pack()
         self.board = chess.Board()
         self.board_pieces = {}
+        self.squares = {}
         self.square_coordinates = {}
+        self.square_colors = {}
         self.image_dir = os.path.join(os.path.dirname(__file__), "pieces")
         self.selected_square = None
 
@@ -44,8 +46,10 @@ class ChessBoard:
         square_index = chess.square(col, 7 - row)
         centre_x, centre_y = (x1 + x2) / 2, (y1 + y2) / 2
 
-        self.canvas.create_rectangle(x1, y1, x2, y2, fill=color, outline="")
+        square = self.canvas.create_rectangle(x1, y1, x2, y2, fill=color, outline="")
+        self.squares[square_index] = square
         self.square_coordinates[square_index] = (centre_x, centre_y)
+        self.square_colors[square_index] = color
 
         self._place_piece_on_square(square_index, centre_x, centre_y)
 
@@ -74,6 +78,15 @@ class ChessBoard:
         for (centre_x, centre_y), piece_image_tk in self.board_pieces.items():
             self.canvas.create_image(centre_x, centre_y, image=piece_image_tk)
 
+    def _highlight_square(self, square_index):
+        """Change the color of the specified square to green."""
+        self.canvas.itemconfig(self.squares[square_index], fill="green")
+
+    def _reset_square_color(self, square_index):
+        """Reset the color of the specified square to its original color."""
+        original_color = self.square_colors.get(square_index)
+        self.canvas.itemconfig(self.squares[square_index], fill=original_color)
+
     def handle_click(self, event):
         """Handle mouse click event on canvas."""
         x, y = event.x, event.y
@@ -84,12 +97,14 @@ class ChessBoard:
         if self.selected_square is None:
             # Select piece on the clicked square
             self.selected_square = square_index
+            self._highlight_square(square_index)
         else:
             # Move the selected piece to the clicked square if it is a valid move
             move = chess.Move(self.selected_square, square_index)
             if move in self.board.legal_moves:
                 self.board.push(move)
                 self.update_board_display()
+                self._reset_square_color(self.selected_square)
                 self.selected_square = None # Clear selection after move
 
     def update_board_display(self):
