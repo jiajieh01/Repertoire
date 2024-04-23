@@ -97,6 +97,9 @@ class ChessBoard:
         if self.selected_square is None:
             # No piece currently selected, check if there's a piece on the clicked square
             piece = self.board.piece_at(square_index)
+            if piece is None:
+                return
+            
             piece_color = "white" if piece.color == chess.WHITE else "black"
             current_turn_color = "white" if self.board.turn == chess.WHITE else "black"
             if piece and piece_color == current_turn_color:
